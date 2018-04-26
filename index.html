@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>吃豆人动画</title>
+</head>
+<style>
+	body{
+		text-align: center;
+
+	}
+	canvas{
+		background: #eeeeee;
+		cursor: url("img/fish.cur"),auto;
+	}
+</style>
+<body>
+<canvas id="c1"></canvas>
+<script>
+    var w=1600,h=890;
+    //这里不能使用style的方式给canvas设置宽、高
+    //或者直接在canvas中固定写width=800,height=600也可以
+    c1.width=w;
+    c1.height=h;
+    //前提：创建2d画笔
+    var ctx=c1.getContext('2d');
+    //var x=w/2,y=h/2; //不建议提前声明，最好放在调用openMouse处
+    //绘制张嘴
+    function openMouse(x,y) {
+        //开始路径
+        ctx.beginPath();
+        //绘制圆
+        ctx.arc(x,y,r,30*Math.PI/180,330*Math.PI/180);
+        ctx.lineTo(x,y);
+        ctx.closePath();
+
+        ctx.stroke();
+        ctx.fillStyle='#FEE372';
+        ctx.fill();
+        eyes(x,y,r);
+    }
+    //绘制眼睛
+    function eyes(x,y,r) {
+        //绘制大眼睛
+        ctx.beginPath();
+        var bx=x+r/3,by=y-r/2,r=r/4;
+        ctx.arc(bx,by,r,0,2*Math.PI);
+        ctx.fillStyle='#000';
+        ctx.fill();
+        ctx.closePath();
+
+        //小眼睛
+        ctx.beginPath();
+        ctx.arc(bx+r/2,by-r/3,r/2,0,2*Math.PI);
+        ctx.fillStyle='#fff';
+        ctx.fill();
+    }
+    // closeMouse();
+
+    //绘制闭嘴巴效果
+    function closeMouse(x,y) {
+        ctx.beginPath();
+        ctx.arc(x,y,r,0,2*Math.PI);
+        ctx.fillStyle='#FEE372';
+        ctx.fill();
+        //先填充颜色，再绘制最后一条线
+        ctx.lineTo(x,y);
+        ctx.closePath();
+        ctx.stroke();
+
+        eyes(x,y,r);
+    }
+    var isOpen=true;
+    //使用定时器 不断绘制张嘴 闭嘴动画
+    var x=w/2,y=h/2,r=80;//此处声明默认圆心
+    var timer=setInterval(function () {
+        //鼠标移动事件
+        c1.onmousemove=function (e) {
+            x=e.offsetX-r;
+            y=e.offsetY;
+            x<r?x=r:(x>w?w:x);
+            y<r?y=r:(y>h-r?(y=h-r):y);///这里赋值y=h-r，效果就对了
+			/* if(y<r){
+			 y=r;
+			 }else if(y>h-r){
+			 y=h-r;
+			 }*/
+        };
+        //绘制动画之前，先清空画布
+        ctx.clearRect(0,0,w,h);
+        if(isOpen){
+            closeMouse(x,y);
+            isOpen=false;
+        }else {
+            openMouse(x,y);
+            isOpen=true;
+        }
+    },400);
+</script>
+</body>
+</html>
